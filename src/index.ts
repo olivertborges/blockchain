@@ -1,39 +1,18 @@
-import { Block } from "./Block.js";
+import { Blockchain } from "./Blockchain.js";
 
-const bloqueGenesis = new Block(
-  0,
-  Date.now(),
-  "Bloque Génesis",
-  "0"
-);
+const blockchain = new Blockchain();
 
-const bloque1 = new Block(
-  1,
-  Date.now(),
-  "Primer bloque",
-  bloqueGenesis.hash
-);
+blockchain.addBlock("Primer bloque");
+blockchain.addBlock("Segundo bloque");
 
-const bloque2 = new Block(
-  2,
-  Date.now(),
-  "Segundo bloque",
-  bloque1.hash
-);
+console.log("¿Blockchain válida antes de alterar?");
+console.log(blockchain.isValid());
 
-// Alguien altera el contenido del bloque 1
-const bloque1Alterado = new Block(
-  1,
-  bloque1.timestamp,
-  "Primer bloque ALTERADO",
-  bloque1.previousHash
-);
+const bloque1 = blockchain.chain[1];
 
-console.log("Hash original del bloque 1:");
-console.log(bloque1.hash);
+if (bloque1) {
+  bloque1.data = "Primer bloque ALTERADO";
+}
 
-console.log("\nHash del bloque 1 alterado:");
-console.log(bloque1Alterado.hash);
-
-console.log("\n¿El bloque 2 sigue apuntando al bloque 1 original?");
-console.log(bloque2.previousHash === bloque1Alterado.hash);
+console.log("\n¿Blockchain válida después de alterar?");
+console.log(blockchain.isValid());

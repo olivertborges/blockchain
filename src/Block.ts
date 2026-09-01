@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 export class Block {
   public readonly index: number;
   public readonly timestamp: number;
-  public readonly data: string;
+  public data: string;
   public readonly previousHash: string;
   public readonly hash: string;
 
@@ -20,7 +20,7 @@ export class Block {
     this.hash = this.calculateHash();
   }
 
-  private calculateHash(): string {
+  public calculateHash(): string {
     return createHash("sha256")
       .update(
         `${this.index}${this.timestamp}${this.data}${this.previousHash}`
