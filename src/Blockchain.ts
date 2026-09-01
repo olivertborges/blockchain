@@ -134,7 +134,8 @@ export class Blockchain {
         return false;
       }
 
-      const rewardTransaction = currentBlock.transactions[0];
+      const rewardTransaction =
+        currentBlock.transactions[currentBlock.transactions.length - 1];
 
       if (!rewardTransaction) {
         return false;
@@ -152,7 +153,7 @@ export class Blockchain {
         return false;
       }
 
-      for (const transaction of currentBlock.transactions.slice(1)) {
+      for (const transaction of currentBlock.transactions.slice(0, -1)) {
         if (!transaction.verifySignature()) {
           return false;
         }

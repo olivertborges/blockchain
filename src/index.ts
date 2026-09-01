@@ -1,55 +1,38 @@
 import { Wallet } from "./Wallet.js";
-import { Transaction } from "./Transaction.js";
 import { Blockchain } from "./Blockchain.js";
+import { Transaction } from "./Transaction.js";
 
 const alice = new Wallet();
 const bob = new Wallet();
-const carlos = new Wallet();
 
 const blockchain = new Blockchain();
 
-// Alice consigue 50 monedas.
+// Alice recibe 50 por minería.
 blockchain.minePendingTransactions(alice.publicKey);
 
 console.log("Balance de Alice:");
 console.log(blockchain.getBalance(alice.publicKey));
 
-// Primera transacción: Alice → Bob: 40
-const transaction1 = new Transaction(
+// Creamos una transacción válida de Alice → Bob por 40.
+const transaction = new Transaction(
   alice.publicKey,
   bob.publicKey,
   40
 );
 
-transaction1.signTransaction(alice.privateKey);
+transaction.signTransaction(alice.privateKey);
 
-try {
-  blockchain.addTransaction(transaction1);
-  console.log("\nPrimera transacción agregada. ✅");
-} catch (error) {
-  console.log("\nError en la primera transacción:");
-  console.log(error);
-}
+// La agregamos normalmente.
+blockchain.addTransaction(transaction);
 
-// Segunda transacción: Alice → Carlos: 40
-const transaction2 = new Transaction(
-  alice.publicKey,
-  carlos.publicKey,
-  40
-);
+// Minamos el bloque.
+blockchain.minePendingTransactions(alice.publicKey);
 
-transaction2.signTransaction(alice.privateKey);
+console.log("\nBalance de Alice:");
+console.log(blockchain.getBalance(alice.publicKey));
 
-try {
-  blockchain.addTransaction(transaction2);
-  console.log("Segunda transacción agregada. ❌");
-} catch (error) {
-  console.log("\nSegunda transacción rechazada correctamente. 🛑");
-  console.log((error as Error).message);
-}
+console.log("\nBalance de Bob:");
+console.log(blockchain.getBalance(bob.publicKey));
 
-console.log("\nTransacciones pendientes:");
-console.log(blockchain.pendingTransactions.length);
-
-console.log("\nBlockchain válida:");
+console.log("\n¿La blockchain es válida?");
 console.log(blockchain.isValid());
