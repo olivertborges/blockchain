@@ -152,4 +152,48 @@ describe("Blockchain", () => {
 
     expect(blockchain.isValid()).toBe(false);
   });
+
+  it("debe rechazar una transacción con cantidad negativa", () => {
+    const blockchain = new Blockchain();
+    const alice = new Wallet();
+    const bob = new Wallet();
+
+    blockchain.minePendingTransactions(alice.publicKey);
+
+    const transaction = new Transaction(
+      alice.publicKey,
+      bob.publicKey,
+      -10
+    );
+
+    transaction.signTransaction(alice.privateKey);
+
+    expect(() => {
+      blockchain.addTransaction(transaction);
+    }).toThrow("La cantidad debe ser mayor que cero");
+
+    expect(blockchain.pendingTransactions).toHaveLength(0);
+  });
+
+  it("debe rechazar una transacción con una cantidad no válida", () => {
+    const blockchain = new Blockchain();
+    const alice = new Wallet();
+    const bob = new Wallet();
+
+    blockchain.minePendingTransactions(alice.publicKey);
+
+    const transaction = new Transaction(
+      alice.publicKey,
+      bob.publicKey,
+      NaN
+    );
+
+    transaction.signTransaction(alice.privateKey);
+
+    expect(() => {
+      blockchain.addTransaction(transaction);
+    }).toThrow("La cantidad debe ser un número válido");
+
+    expect(blockchain.pendingTransactions).toHaveLength(0);
+  });
 });

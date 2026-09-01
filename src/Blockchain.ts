@@ -27,6 +27,14 @@ export class Blockchain {
   }
 
   public addTransaction(transaction: Transaction): void {
+    if (!Number.isFinite(transaction.amount)) {
+      throw new Error("La cantidad debe ser un número válido");
+    }
+
+    if (transaction.amount <= 0) {
+      throw new Error("La cantidad debe ser mayor que cero");
+    }
+
     if (!transaction.verifySignature()) {
       throw new Error("La transacción tiene una firma inválida.");
     }
@@ -149,7 +157,9 @@ export class Blockchain {
         return false;
       }
 
-      if (rewardTransaction.id !== rewardTransaction.calculateId()) {
+      if (
+        rewardTransaction.id !== rewardTransaction.calculateId()
+      ) {
         return false;
       }
 
@@ -157,7 +167,9 @@ export class Blockchain {
         return false;
       }
 
-      for (const transaction of currentBlock.transactions.slice(0, -1)) {
+      for (
+        const transaction of currentBlock.transactions.slice(0, -1)
+      ) {
         if (transaction.id !== transaction.calculateId()) {
           return false;
         }
