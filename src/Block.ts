@@ -1,21 +1,22 @@
 import { createHash } from "node:crypto";
+import { Transaction } from "./Transaction.js";
 
 export class Block {
   public readonly index: number;
   public readonly timestamp: number;
-  public data: string;
+  public readonly transactions: Transaction[];
   public readonly previousHash: string;
   public readonly hash: string;
 
   constructor(
     index: number,
     timestamp: number,
-    data: string,
+    transactions: Transaction[],
     previousHash: string
   ) {
     this.index = index;
     this.timestamp = timestamp;
-    this.data = data;
+    this.transactions = transactions;
     this.previousHash = previousHash;
     this.hash = this.calculateHash();
   }
@@ -23,7 +24,7 @@ export class Block {
   public calculateHash(): string {
     return createHash("sha256")
       .update(
-        `${this.index}${this.timestamp}${this.data}${this.previousHash}`
+        `${this.index}${this.timestamp}${JSON.stringify(this.transactions)}${this.previousHash}`
       )
       .digest("hex");
   }
