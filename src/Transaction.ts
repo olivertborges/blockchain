@@ -1,9 +1,14 @@
-import { createSign, createVerify } from "node:crypto";
+import {
+  createHash,
+  createSign,
+  createVerify,
+} from "node:crypto";
 
 export class Transaction {
   public readonly from: string | null;
   public readonly to: string;
   public readonly amount: number;
+  public readonly id: string;
   public signature: string | null;
 
   constructor(
@@ -15,10 +20,17 @@ export class Transaction {
     this.to = to;
     this.amount = amount;
     this.signature = null;
+    this.id = this.calculateId();
   }
 
   public calculateHash(): string {
     return `${this.from}${this.to}${this.amount}`;
+  }
+
+  public calculateId(): string {
+    return createHash("sha256")
+      .update(this.calculateHash())
+      .digest("hex");
   }
 
   public signTransaction(privateKey: string): void {
