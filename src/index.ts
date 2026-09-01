@@ -1,18 +1,15 @@
-import { Blockchain } from "./Blockchain.js";
+import { Wallet } from "./Wallet.js";
+import { Transaction } from "./Transaction.js";
 
-const blockchain = new Blockchain();
+const wallet = new Wallet();
 
-blockchain.addBlock("Primer bloque");
-blockchain.addBlock("Segundo bloque");
+const transaction = new Transaction(
+  wallet.publicKey,
+  "Bob",
+  10
+);
 
-console.log("¿Blockchain válida antes de alterar?");
-console.log(blockchain.isValid());
+transaction.signTransaction(wallet.privateKey);
 
-const bloque1 = blockchain.chain[1];
-
-if (bloque1) {
-  bloque1.data = "Primer bloque ALTERADO";
-}
-
-console.log("\n¿Blockchain válida después de alterar?");
-console.log(blockchain.isValid());
+console.log("¿La firma es válida?");
+console.log(transaction.verifySignature());
