@@ -128,7 +128,25 @@ export class Blockchain {
         return false;
       }
 
-      for (const transaction of currentBlock.transactions) {
+      const rewardTransaction = currentBlock.transactions[0];
+
+      if (!rewardTransaction) {
+        return false;
+      }
+
+      if (rewardTransaction.from !== null) {
+        return false;
+      }
+
+      if (rewardTransaction.amount !== this.miningReward) {
+        return false;
+      }
+
+      if (!rewardTransaction.verifySignature()) {
+        return false;
+      }
+
+      for (const transaction of currentBlock.transactions.slice(1)) {
         if (!transaction.verifySignature()) {
           return false;
         }
