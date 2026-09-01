@@ -31,17 +31,23 @@ export class Blockchain {
       throw new Error("La transacción tiene una firma inválida.");
     }
 
-    const balance = this.getBalance(transaction.from);
-
     if (transaction.from === null) {
       throw new Error(
         "Una recompensa minera no puede agregarse como una transacción normal."
       );
     }
 
-    if (balance < transaction.amount) {
+    const balance = this.getBalance(transaction.from);
+
+    const pendingOutgoing = this.pendingTransactions
+      .filter((pending) => pending.from === transaction.from)
+      .reduce((total, pending) => total + pending.amount, 0);
+
+    const availableBalance = balance - pendingOutgoing;
+
+    if (availableBalance < transaction.amount) {
       throw new Error(
-        `Saldo insuficiente. Disponible: ${balance}, necesario: ${transaction.amount}`
+        `Saldo insuficiente. Disponible: ${availableBalance}, necesario: ${transaction.amount}`
       );
     }
 

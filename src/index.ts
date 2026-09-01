@@ -1,38 +1,44 @@
 import { Wallet } from "./Wallet.js";
+import { Transaction } from "./Transaction.js";
 import { Blockchain } from "./Blockchain.js";
 
-const miner = new Wallet();
+const alice = new Wallet();
+const bob = new Wallet();
+const carlos = new Wallet();
+
 const blockchain = new Blockchain();
 
-blockchain.minePendingTransactions(miner.publicKey);
+// Alice consigue 50 monedas.
+blockchain.minePendingTransactions(alice.publicKey);
 
-console.log("Blockchain válida antes de alterar:");
-console.log(blockchain.isValid());
+console.log("Balance de Alice:");
+console.log(blockchain.getBalance(alice.publicKey));
 
-const block = blockchain.chain[1];
+// Primera transacción: Alice → Bob: 40
+const transaction1 = new Transaction(
+  alice.publicKey,
+  bob.publicKey,
+  40
+);
 
-if (!block) {
-  throw new Error("No existe el bloque 1.");
-}
+transaction1.signTransaction(alice.privateKey);
 
-const reward = block.transactions[0];
+blockchain.addTransaction(transaction1);
 
-if (!reward) {
-  throw new Error("El bloque no contiene recompensa.");
-}
+console.log("\nPrimera transacción agregada.");
 
-// Alteramos la recompensa únicamente para esta prueba.
-// Usamos Object.defineProperty porque amount es readonly a nivel de TypeScript.
-Object.defineProperty(reward, "amount", {
-  value: 1_000_000,
-  writable: false,
-  configurable: true
-});
+// Segunda transacción: Alice → Carlos: 40
+const transaction2 = new Transaction(
+  alice.publicKey,
+  carlos.publicKey,
+  40
+);
 
-block.hash = block.calculateHash();
+transaction2.signTransaction(alice.privateKey);
 
-console.log("\nRecompensa alterada:");
-console.log(reward.amount);
+blockchain.addTransaction(transaction2);
 
-console.log("\n¿La blockchain es válida después de alterar?");
-console.log(blockchain.isValid());
+console.log("Segunda transacción agregada.");
+
+console.log("\nTransacciones pendientes:");
+console.log(blockchain.pendingTransactions);
