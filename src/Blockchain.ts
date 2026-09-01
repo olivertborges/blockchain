@@ -22,6 +22,18 @@ export class Blockchain {
   }
 
   public addTransaction(transaction: Transaction): void {
+    if (!transaction.verifySignature()) {
+      throw new Error("La transacción tiene una firma inválida.");
+    }
+
+    const balance = this.getBalance(transaction.from);
+
+    if (balance < transaction.amount) {
+      throw new Error(
+        `Saldo insuficiente. Disponible: ${balance}, necesario: ${transaction.amount}`
+      );
+    }
+
     this.pendingTransactions.push(transaction);
   }
 
