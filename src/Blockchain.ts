@@ -4,10 +4,12 @@ import { Transaction } from "./Transaction.js";
 export class Blockchain {
   public readonly chain: Block[];
   public readonly pendingTransactions: Transaction[];
+  public readonly difficulty: number;
 
-  constructor() {
+  constructor(difficulty: number = 3) {
     this.chain = [this.createGenesisBlock()];
     this.pendingTransactions = [];
+    this.difficulty = difficulty;
   }
 
   private createGenesisBlock(): Block {
@@ -39,8 +41,16 @@ export class Blockchain {
       previousBlock.hash
     );
 
+    console.log(`Minando bloque ${newBlock.index}...`);
+
+    newBlock.mine(this.difficulty);
+
     this.chain.push(newBlock);
     this.pendingTransactions.length = 0;
+
+    console.log(`Bloque minado.`);
+    console.log(`Nonce: ${newBlock.nonce}`);
+    console.log(`Hash: ${newBlock.hash}`);
   }
 
   public isValid(): boolean {
@@ -58,6 +68,16 @@ export class Blockchain {
 
       if (currentBlock.previousHash !== previousBlock.hash) {
         return false;
+      }
+
+      if (!currentBlock.hash.startsWith("0".repeat(this.difficulty))) {
+        return false;
+      }
+
+      for (const transaction of currentBlock.transactions) {
+        if (!transaction.verifySignature()) {
+          return false;
+        }
       }
     }
 
