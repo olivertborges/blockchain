@@ -23,9 +23,13 @@ const transaction1 = new Transaction(
 
 transaction1.signTransaction(alice.privateKey);
 
-blockchain.addTransaction(transaction1);
-
-console.log("\nPrimera transacción agregada.");
+try {
+  blockchain.addTransaction(transaction1);
+  console.log("\nPrimera transacción agregada. ✅");
+} catch (error) {
+  console.log("\nError en la primera transacción:");
+  console.log(error);
+}
 
 // Segunda transacción: Alice → Carlos: 40
 const transaction2 = new Transaction(
@@ -36,9 +40,16 @@ const transaction2 = new Transaction(
 
 transaction2.signTransaction(alice.privateKey);
 
-blockchain.addTransaction(transaction2);
-
-console.log("Segunda transacción agregada.");
+try {
+  blockchain.addTransaction(transaction2);
+  console.log("Segunda transacción agregada. ❌");
+} catch (error) {
+  console.log("\nSegunda transacción rechazada correctamente. 🛑");
+  console.log((error as Error).message);
+}
 
 console.log("\nTransacciones pendientes:");
-console.log(blockchain.pendingTransactions);
+console.log(blockchain.pendingTransactions.length);
+
+console.log("\nBlockchain válida:");
+console.log(blockchain.isValid());
