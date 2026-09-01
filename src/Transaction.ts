@@ -1,13 +1,13 @@
 import { createSign, createVerify } from "node:crypto";
 
 export class Transaction {
-  public readonly from: string;
+  public readonly from: string | null;
   public readonly to: string;
   public readonly amount: number;
   public signature: string | null;
 
   constructor(
-    from: string,
+    from: string | null,
     to: string,
     amount: number
   ) {
@@ -22,6 +22,10 @@ export class Transaction {
   }
 
   public signTransaction(privateKey: string): void {
+    if (this.from === null) {
+      throw new Error("Una recompensa minera no necesita firma.");
+    }
+
     const signer = createSign("SHA256");
 
     signer.update(this.calculateHash());
@@ -31,6 +35,10 @@ export class Transaction {
   }
 
   public verifySignature(): boolean {
+    if (this.from === null) {
+      return true;
+    }
+
     if (this.signature === null) {
       return false;
     }

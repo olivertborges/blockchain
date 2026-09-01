@@ -5,11 +5,16 @@ export class Blockchain {
   public readonly chain: Block[];
   public readonly pendingTransactions: Transaction[];
   public readonly difficulty: number;
+  public readonly miningReward: number;
 
-  constructor(difficulty: number = 3) {
+  constructor(
+    difficulty: number = 3,
+    miningReward: number = 50
+  ) {
     this.chain = [this.createGenesisBlock()];
     this.pendingTransactions = [];
     this.difficulty = difficulty;
+    this.miningReward = miningReward;
   }
 
   private createGenesisBlock(): Block {
@@ -28,6 +33,12 @@ export class Blockchain {
 
     const balance = this.getBalance(transaction.from);
 
+    if (transaction.from === null) {
+      throw new Error(
+        "Una recompensa minera no puede agregarse como una transacción normal."
+      );
+    }
+
     if (balance < transaction.amount) {
       throw new Error(
         `Saldo insuficiente. Disponible: ${balance}, necesario: ${transaction.amount}`
@@ -37,14 +48,23 @@ export class Blockchain {
     this.pendingTransactions.push(transaction);
   }
 
-  public minePendingTransactions(): void {
+  public minePendingTransactions(minerAddress: string): void {
     const previousBlock = this.chain[this.chain.length - 1];
 
     if (!previousBlock) {
       throw new Error("La blockchain no tiene bloques.");
     }
 
-    const transactions = [...this.pendingTransactions];
+    const rewardTransaction = new Transaction(
+      null,
+      minerAddress,
+      this.miningReward
+    );
+
+    const transactions = [
+      ...this.pendingTransactions,
+      rewardTransaction
+    ];
 
     const newBlock = new Block(
       this.chain.length,
@@ -65,7 +85,11 @@ export class Blockchain {
     console.log(`Hash: ${newBlock.hash}`);
   }
 
-  public getBalance(address: string): number {
+  public getBalance(address: string | null): number {
+    if (address === null) {
+      return 0;
+    }
+
     let balance = 0;
 
     for (const block of this.chain) {
