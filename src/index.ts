@@ -2,29 +2,32 @@ import { Wallet } from "./Wallet.js";
 import { Transaction } from "./Transaction.js";
 import { Blockchain } from "./Blockchain.js";
 
-const wallet = new Wallet();
+const alice = new Wallet();
 const blockchain = new Blockchain();
 
 const transaction = new Transaction(
-  wallet.publicKey,
+  alice.publicKey,
   "Bob",
   10
 );
 
-transaction.signTransaction(wallet.privateKey);
-
-console.log("¿La firma es válida?");
-console.log(transaction.verifySignature());
+transaction.signTransaction(alice.privateKey);
 
 blockchain.addTransaction(transaction);
 
-console.log("\nTransacciones pendientes:");
-console.log(blockchain.pendingTransactions);
+console.log("Balance de Alice antes de minar:");
+console.log(blockchain.getBalance(alice.publicKey));
+
+console.log("\nBalance de Bob antes de minar:");
+console.log(blockchain.getBalance("Bob"));
 
 blockchain.minePendingTransactions();
 
-console.log("\nBlockchain:");
-console.log(blockchain.chain);
+console.log("\nBalance de Alice después de minar:");
+console.log(blockchain.getBalance(alice.publicKey));
+
+console.log("\nBalance de Bob después de minar:");
+console.log(blockchain.getBalance("Bob"));
 
 console.log("\n¿La blockchain es válida?");
 console.log(blockchain.isValid());

@@ -53,6 +53,24 @@ export class Blockchain {
     console.log(`Hash: ${newBlock.hash}`);
   }
 
+  public getBalance(address: string): number {
+    let balance = 0;
+
+    for (const block of this.chain) {
+      for (const transaction of block.transactions) {
+        if (transaction.from === address) {
+          balance -= transaction.amount;
+        }
+
+        if (transaction.to === address) {
+          balance += transaction.amount;
+        }
+      }
+    }
+
+    return balance;
+  }
+
   public isValid(): boolean {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
