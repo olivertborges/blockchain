@@ -149,11 +149,19 @@ export class Blockchain {
         return false;
       }
 
+      if (rewardTransaction.id !== rewardTransaction.calculateId()) {
+        return false;
+      }
+
       if (!rewardTransaction.verifySignature()) {
         return false;
       }
 
       for (const transaction of currentBlock.transactions.slice(0, -1)) {
+        if (transaction.id !== transaction.calculateId()) {
+          return false;
+        }
+
         if (!transaction.verifySignature()) {
           return false;
         }
